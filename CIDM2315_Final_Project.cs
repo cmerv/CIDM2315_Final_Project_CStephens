@@ -98,13 +98,33 @@ class Hotel_Main
         }
 
         static void CheckIn() {
-            Console.WriteLine("---> Input desired room capacity: ");
+            Console.WriteLine("---> Input desired room capacity:");
             int desiredCapacity = Convert.ToInt16(Console.ReadLine());
             ShowAvailableRooms(desiredCapacity);
             Console.WriteLine("---> Input desired room number:");
-            int roomReservation = Convert.ToInt16(Console.ReadLine());
-            var reservedRoom = Room.roomList.Where(Room => Room.roomNum == roomReservation);
-            Console.WriteLine(reservedRoom);
+            int desiredRoom = Convert.ToInt16(Console.ReadLine());
+            Console.WriteLine("---> Input room guest name:");
+            string? guestName = Console.ReadLine();
+            Console.WriteLine("---> Input room guest email:");
+            string? guestEmail = Console.ReadLine();
+            {
+                foreach (var room in Room.filteredRoomList.Where(Room => Room.roomNum == desiredRoom))
+                {
+                    if (room.isRoomReserved==true)
+                    {
+                        Console.WriteLine($"Room is already reserved to another guest");
+                        continue;
+                    }
+                    else {
+                    room.isRoomReserved = true;
+                    room.RoomGuestEmail = guestEmail;
+                    room.RoomGuestName = guestName;
+                    Room.reservedRoomList.Add(room);
+                    Room.roomList.Remove(room);
+                    Console.WriteLine($"Checked in successfully! {room.RoomGuestName} with email {room.RoomGuestEmail} has been checked into Room {room.roomNum}.");
+                    }
+                }
+            }
          }
 
         static void ShowReservedRooms() {
@@ -123,7 +143,7 @@ class Hotel_Main
         public static List<Room> roomList = new List<Room>();
         public static List<Room> reservedRoomList = new List<Room>();
         public int roomNum;
-        public bool isRoomReserved = false;
+        public bool isRoomReserved;
         private string? roomGuestName;
         private string? roomGuestEmail;
         public int roomCapacity;
@@ -142,6 +162,9 @@ class Hotel_Main
             roomNum = initRoomNum;
             roomCapacity = initRoomCapacity;
             roomList.Add(this);
+            isRoomReserved = false;
+            roomGuestEmail = null;
+            roomGuestName = null;
         }
     }
 }
