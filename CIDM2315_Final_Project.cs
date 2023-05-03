@@ -57,29 +57,29 @@ class Hotel_Main
             do {
             Console.WriteLine("---> Please select one of the options below:");
             Console.Write("\n1. Show available rooms\n2. Check in\n3. Show reserved rooms\n4. Check out\n5. Log out\n");
-            var menuSelect = Convert.ToInt16(Console.ReadLine());
+            var menuSelect = Convert.ToString(Console.ReadLine());
             switch (menuSelect)
             {
                 default:
                 Console.WriteLine("---> Invalid entry.");
                 continue;
-                case 1:
+                case "1":
                 // Show Available Rooms
                 ShowAvailableRooms(0);
                 continue;
-                case 2:
+                case "2":
                 // Check in
                 CheckIn();
                 continue;
-                case 3:
+                case "3":
                 // Show Reserved Rooms
                 ShowReservedRooms();            
                 continue;    
-                case 4:
+                case "4":
                 // Check out
                 CheckOut();
                 continue;
-                case 5:
+                case "5":
                 // Quit
                 Console.Write("Logging off of system..");
                 menuExit = true;
@@ -92,18 +92,20 @@ class Hotel_Main
             var filteredRooms = Room.roomList.Where(Room => Room.roomCapacity >= desiredCapacity);
                 foreach(var Room in filteredRooms)
                 {
-                    Console.WriteLine($"++ Room Number: {Room.roomNum}, Room Capacity: {Room.roomCapacity}");
+                    Console.WriteLine($"++ Room Number: {Room.roomNum}, Room Capacity: {Room.roomCapacity}"); // cycle through our lists of rooms that are above or equal to desired capacity
                     Room.filteredRoomList.Add(Room);
                 }
             if (Room.filteredRoomList.Count > 0 ){
             Console.WriteLine($"---> Total available rooms: {Room.filteredRoomList.Count}");
                 areRoomsAvailable=true;
+                filteredRooms = null;
                 return areRoomsAvailable;
             }
             else
             {
                 Console.WriteLine("---> Sorry, there are no available rooms of this capacity.");
                 areRoomsAvailable=false;
+                filteredRooms = null;
                 return areRoomsAvailable;
             }
         }
@@ -164,12 +166,16 @@ class Hotel_Main
                             roomOnReservedList=false;
                             room.isRoomReserved=false;
                             Room.roomList.Add(room);
+                            var sortedRoomList = Room.roomList.OrderBy(Room => Room.roomNum).ToList(); // Ephemeral sortedRoomList becomes an ordered version of roomList
                             Room.reservedRoomList.Remove(room);
                             ShowReservedRooms();
+                            Room.roomList.Clear(); // Clearing existing roomlist
+                            Room.roomList = sortedRoomList; // roomList becomes ordered list from sortedRoomList
                             Console.WriteLine($"---> Check out is complete. Guest {room.RoomGuestName} has been checked out from {room.roomNum}.");
                         }
                         else 
                         {
+                            Console.WriteLine("---> Check out has been cancelled.");
                         }
                     }
                   }
